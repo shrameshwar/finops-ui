@@ -1,14 +1,26 @@
-FROM node:18-alpine
+# ---------- BUILD STAGE ----------
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
+COPY package*.json ./
 RUN npm install
 
 COPY . .
 
 RUN npm run build
 
-ENV PORT=8080
 
-CMD ["node", ".next/standalone/server.js"]
+# ---------- RUN STAGE ----------
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy only required files
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+EXPOSE 8080
+
+CMD ["node", "server.js"]
