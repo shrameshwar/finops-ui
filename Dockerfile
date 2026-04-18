@@ -19,7 +19,6 @@ WORKDIR /app
 # Copy only required files
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
 
 EXPOSE 8080
 
