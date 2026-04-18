@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FinOps Portal</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding: 50px;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      border-radius: 8px;
+      border: none;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #3b82f6;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      margin: 10px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🚀 Cost Optimization Portal</h1>
+
+<input id="projectId" placeholder="Enter Project ID">
+<button onclick="fetchData()">Analyze</button>
+
+<p id="msg"></p>
+
+<div id="data"></div>
+
+<script>
+async function fetchData() {
+  const projectId = document.getElementById("projectId").value;
+  const msg = document.getElementById("msg");
+  const dataDiv = document.getElementById("data");
+
+  msg.innerText = "Fetching data...";
+  dataDiv.innerHTML = "";
+
+  try {
+    const res = await fetch(`https://finops-321140769217.asia-south1.run.app/recommendations?project_id=${projectId}`);
+    const data = await res.json();
+
+    if (!data.length) {
+      msg.innerText = "⏳ No recommendations yet (API delay)";
+      return;
+    }
+
+    msg.innerText = "✅ Data loaded";
+
+    data.forEach(item => {
+      dataDiv.innerHTML += `
+        <div class="card">
+          <h3>${item.description}</h3>
+          <p>💰 Savings: $${Math.abs(item.savings)}</p>
+          <p>📍 ${item.location}</p>
+        </div>
+      `;
+    });
+
+  } catch (e) {
+    msg.innerText = "❌ API error";
+  }
+}
+</script>
+
+</body>
+</html>
